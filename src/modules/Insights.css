@@ -1,0 +1,42 @@
+.workflow-container {
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.workflow-container::before {
+    content: "";
+    position: absolute;
+    inset: -15px;  /* Increased from -10px to -15px for thicker border */
+    z-index: -1;
+    background: conic-gradient(from var(--angle), transparent 0%, #3c08f9 25%, transparent 50%);
+    animation: glowing 5s linear infinite;
+    border-radius: 5px;
+}
+
+.workflow-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    border-radius: 5px;
+    z-index: -1;
+    filter: drop-shadow(0 0 40px #001A5F)  /* Increased shadow values */
+            drop-shadow(0 0 50px #001A5F)
+            drop-shadow(0 0 60px #001A5F);
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes glowing {
+    0% {
+        --angle: 0deg;
+    }
+    100% {
+        --angle: 360deg;
+    }
+}

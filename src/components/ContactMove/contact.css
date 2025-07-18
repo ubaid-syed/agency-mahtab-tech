@@ -1,0 +1,81 @@
+
+@keyframes scrollText {
+       0% {
+         transform: translateX(0);
+       }
+       100% {
+         transform: translateX(-50%);
+       }
+     }
+     
+     .contact-move {
+       display: flex;
+       overflow: hidden;
+       white-space: nowrap;
+       width: 100%;
+     }
+     
+     .contact-move .scrolling-text {
+       display: flex;
+       animation: scrollText 35s linear infinite;
+     }
+     
+     .contact-move h1 {
+       font-size: 6vw; 
+       padding-right: 2rem; 
+     }
+     
+
+
+
+      .contact-move {
+       position: relative;
+     }
+     
+     /* .scrolling-text {
+       white-space: nowrap;
+       overflow: hidden;
+       position: relative;
+     } */
+     
+   .contact-move .scrolling-text button {
+       position: relative;
+       overflow: hidden;
+       z-index: 1;
+     }
+     
+    .contact-move button::before {
+       content: '';
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       width: 300%;
+       height: 300%;
+       background: #000; /* Background color on hover */
+       transition: transform 1s ease;
+       transform: translate(-50%, -50%) scale(0);
+       border: none;
+       z-index: -1;
+       outline: none;
+       border-radius: 100%;
+     }
+     
+    .contact-move button:hover::before {
+       transform: translate(-50%, -50%) scale(0.32);
+       border: none;
+       outline: none;
+
+     }
+     
+    .contact-move button {
+       background-color: #fff;
+       color: #000;
+       border: none;
+       outline: none;
+       transition: color 0.5s ease;
+     }
+     
+    .contact-move button:hover {
+       color: #fff;
+     }
+     
