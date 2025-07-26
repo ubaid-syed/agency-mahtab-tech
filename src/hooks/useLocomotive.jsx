@@ -565,7 +565,7 @@ import {
   faviconSky,
   faviconWhite,
 } from "../config/favicon";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -578,8 +578,17 @@ const useLocomotive = (start) => {
 
     // Get main scroll container
     const scrollEl = document.querySelector("main");
+    if (!scrollEl) return;
 
-    // Initialize Locomotive Scroll with optimized mobile settings
+    // Destroy previous instance if exists (for route changes)
+    if (locoScrollRef.current) {
+      try {
+        locoScrollRef.current.destroy();
+      } catch (e) {}
+      locoScrollRef.current = null;
+    }
+
+    // Initialize Locomotive Scroll
     locoScrollRef.current = new LocomotiveScroll({
       el: scrollEl,
       smooth: true,
@@ -599,33 +608,29 @@ const useLocomotive = (start) => {
         touchMultiplier: 2,
       },
       reloadOnContextChange: true,
-      resetNativeScroll: true, // Changed to true to fix scroll reset issues
+      resetNativeScroll: true,
     });
 
     // Update ScrollTrigger on scroll
     locoScrollRef.current.on("scroll", ScrollTrigger.update);
 
-    // Setup ScrollTrigger proxy with improved mobile handling
+    // Setup ScrollTrigger proxy
     ScrollTrigger.scrollerProxy(scrollEl, {
       scrollTop(value) {
         if (locoScrollRef.current) {
-          return arguments.length
-            ? locoScrollRef.current.scrollTo(value, {
-                duration: 0,
-                disableLerp: true,
-              })
-            : locoScrollRef.current.scroll.instance.scroll.y;
+          if (arguments.length) {
+            locoScrollRef.current.scrollTo(value, { duration: 0, disableLerp: true });
+          }
+          return locoScrollRef.current.scroll.instance.scroll.y;
         }
         return null;
       },
       scrollLeft(value) {
         if (locoScrollRef.current) {
-          return arguments.length
-            ? locoScrollRef.current.scrollTo(value, {
-                duration: 0,
-                disableLerp: true,
-              })
-            : locoScrollRef.current.scroll.instance.scroll.x;
+          if (arguments.length) {
+            locoScrollRef.current.scrollTo(value, { duration: 0, disableLerp: true });
+          }
+          return locoScrollRef.current.scroll.instance.scroll.x;
         }
         return null;
       },
@@ -640,14 +645,13 @@ const useLocomotive = (start) => {
       pinType: scrollEl.style.transform ? "transform" : "fixed",
     });
 
-    // Update Locomotive Scroll
+    // Update Locomotive Scroll on refresh
     const lsUpdate = () => {
       if (locoScrollRef.current) {
         locoScrollRef.current.update();
       }
     };
 
-    // Set ScrollTrigger defaults
     ScrollTrigger.defaults({
       scroller: scrollEl,
       markers: false,
@@ -658,7 +662,6 @@ const useLocomotive = (start) => {
 
     // Favicon handling
     const favicon = document.querySelector(".favicon");
-
     const sections = [
       { id: "hero__section", favicon: faviconBlack },
       { id: "craft__sky__section", favicon: faviconSky },
@@ -666,7 +669,7 @@ const useLocomotive = (start) => {
       { id: "team__section", favicon: faviconWhite },
     ];
 
-    // Intersection Observer with optimized thresholds
+    // Intersection Observer for favicon
     const observerOptions = {
       root: null,
       rootMargin: "0px",
@@ -684,10 +687,7 @@ const useLocomotive = (start) => {
       });
     };
 
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions
-    );
+    const observer = new window.IntersectionObserver(observerCallback, observerOptions);
 
     sections.forEach((section) => {
       const element = document.getElementById(section.id);
@@ -696,7 +696,7 @@ const useLocomotive = (start) => {
       }
     });
 
-    // Enhanced resize handler with scroll position restoration
+    // Resize handler
     const handleResize = () => {
       if (locoScrollRef.current) {
         const currentScroll = locoScrollRef.current.scroll.instance.scroll.y;
@@ -705,7 +705,7 @@ const useLocomotive = (start) => {
           ScrollTrigger.refresh();
           locoScrollRef.current.scrollTo(currentScroll, {
             duration: 0,
-            disableLerp: true
+            disableLerp: true,
           });
         }, 100);
       }
@@ -713,17 +713,48 @@ const useLocomotive = (start) => {
 
     window.addEventListener("resize", handleResize);
 
+    // Fix: Update Locomotive on route/page change
+    const handleRouteChange = () => {
+      setTimeout(() => {
+        if (locoScrollRef.current) {
+          locoScrollRef.current.update();
+          ScrollTrigger.refresh();
+        }
+      }, 100);
+    };
+    window.addEventListener("popstate", handleRouteChange);
+    window.addEventListener("pushstate", handleRouteChange);
+    window.addEventListener("replacestate", handleRouteChange);
+
     // Cleanup
     return () => {
       if (locoScrollRef.current) {
-        locoScrollRef.current.destroy();
+        try {
+          locoScrollRef.current.destroy();
+        } catch (e) {}
+        locoScrollRef.current = null;
       }
       ScrollTrigger.removeEventListener("refresh", lsUpdate);
       observer.disconnect();
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("popstate", handleRouteChange);
+      window.removeEventListener("pushstate", handleRouteChange);
+      window.removeEventListener("replacestate", handleRouteChange);
     };
   }, [start]);
 
+  // Fix: Update Locomotive on route change (React Router)
+  useEffect(() => {
+    if (!start) return;
+    setTimeout(() => {
+      if (locoScrollRef.current) {
+        locoScrollRef.current.update();
+        ScrollTrigger.refresh();
+      }
+    }, 100);
+  }, [start]);
+
+  // Down button scroll
   useEffect(() => {
     const pages = [
       "#hero__section",
@@ -757,3 +788,205 @@ const useLocomotive = (start) => {
 };
 
 export default useLocomotive;
+// import { useGSAP } from "@gsap/react";
+// import LocomotiveScroll from "locomotive-scroll";
+// import gsap from "gsap";
+// import ScrollTrigger from "gsap/ScrollTrigger";
+// import {
+//   faviconBlack,
+//   faviconSalmon,
+//   faviconSky,
+//   faviconWhite,
+// } from "../config/favicon";
+// import { useEffect, useState, useRef } from "react";
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// const useLocomotive = (start) => {
+//   const [currentIndex, setCurrentIndex] = useState(1);
+//   const locoScrollRef = useRef(null);
+
+//   useGSAP(() => {
+//     if (!start) return;
+
+//     // Get main scroll container
+//     const scrollEl = document.querySelector("main");
+
+//     // Initialize Locomotive Scroll with optimized mobile settings
+//     locoScrollRef.current = new LocomotiveScroll({
+//       el: scrollEl,
+//       smooth: true,
+//       multiplier: 1,
+//       touchMultiplier: 2,
+//       lerp: 0.05,
+//       tablet: {
+//         smooth: true,
+//         breakpoint: 1024,
+//         multiplier: 1,
+//         touchMultiplier: 2,
+//       },
+//       smartphone: {
+//         smooth: true,
+//         breakpoint: 768,
+//         multiplier: 1,
+//         touchMultiplier: 2,
+//       },
+//       reloadOnContextChange: true,
+//       resetNativeScroll: true, // Changed to true to fix scroll reset issues
+//     });
+
+//     // Update ScrollTrigger on scroll
+//     locoScrollRef.current.on("scroll", ScrollTrigger.update);
+
+//     // Setup ScrollTrigger proxy with improved mobile handling
+//     ScrollTrigger.scrollerProxy(scrollEl, {
+//       scrollTop(value) {
+//         if (locoScrollRef.current) {
+//           return arguments.length
+//             ? locoScrollRef.current.scrollTo(value, {
+//                 duration: 0,
+//                 disableLerp: true,
+//               })
+//             : locoScrollRef.current.scroll.instance.scroll.y;
+//         }
+//         return null;
+//       },
+//       scrollLeft(value) {
+//         if (locoScrollRef.current) {
+//           return arguments.length
+//             ? locoScrollRef.current.scrollTo(value, {
+//                 duration: 0,
+//                 disableLerp: true,
+//               })
+//             : locoScrollRef.current.scroll.instance.scroll.x;
+//         }
+//         return null;
+//       },
+//       getBoundingClientRect() {
+//         return {
+//           top: 0,
+//           left: 0,
+//           width: window.innerWidth,
+//           height: window.innerHeight,
+//         };
+//       },
+//       pinType: scrollEl.style.transform ? "transform" : "fixed",
+//     });
+
+//     // Update Locomotive Scroll
+//     const lsUpdate = () => {
+//       if (locoScrollRef.current) {
+//         locoScrollRef.current.update();
+//       }
+//     };
+
+//     // Set ScrollTrigger defaults
+//     ScrollTrigger.defaults({
+//       scroller: scrollEl,
+//       markers: false,
+//     });
+
+//     ScrollTrigger.addEventListener("refresh", lsUpdate);
+//     ScrollTrigger.refresh();
+
+//     // Favicon handling
+//     const favicon = document.querySelector(".favicon");
+
+//     const sections = [
+//       { id: "hero__section", favicon: faviconBlack },
+//       { id: "craft__sky__section", favicon: faviconSky },
+//       { id: "real__work__section", favicon: faviconSalmon },
+//       { id: "team__section", favicon: faviconWhite },
+//     ];
+
+//     // Intersection Observer with optimized thresholds
+//     const observerOptions = {
+//       root: null,
+//       rootMargin: "0px",
+//       threshold: [0.2, 0.5, 0.8],
+//     };
+
+//     const observerCallback = (entries) => {
+//       entries.forEach((entry) => {
+//         if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+//           const section = sections.find((sec) => sec.id === entry.target.id);
+//           if (section && favicon) {
+//             favicon.href = section.favicon;
+//           }
+//         }
+//       });
+//     };
+
+//     const observer = new IntersectionObserver(
+//       observerCallback,
+//       observerOptions
+//     );
+
+//     sections.forEach((section) => {
+//       const element = document.getElementById(section.id);
+//       if (element) {
+//         observer.observe(element);
+//       }
+//     });
+
+//     // Enhanced resize handler with scroll position restoration
+//     const handleResize = () => {
+//       if (locoScrollRef.current) {
+//         const currentScroll = locoScrollRef.current.scroll.instance.scroll.y;
+//         setTimeout(() => {
+//           locoScrollRef.current.update();
+//           ScrollTrigger.refresh();
+//           locoScrollRef.current.scrollTo(currentScroll, {
+//             duration: 0,
+//             disableLerp: true
+//           });
+//         }, 100);
+//       }
+//     };
+
+//     window.addEventListener("resize", handleResize);
+
+//     // Cleanup
+//     return () => {
+//       if (locoScrollRef.current) {
+//         locoScrollRef.current.destroy();
+//       }
+//       ScrollTrigger.removeEventListener("refresh", lsUpdate);
+//       observer.disconnect();
+//       window.removeEventListener("resize", handleResize);
+//     };
+//   }, [start]);
+
+//   useEffect(() => {
+//     const pages = [
+//       "#hero__section",
+//       "#craft__sky__section",
+//       "#real__work__section",
+//       "#team__section",
+//     ];
+
+//     const handleClick = () => {
+//       if (!locoScrollRef.current) return;
+
+//       locoScrollRef.current.scrollTo(pages[currentIndex], {
+//         duration: 1.5,
+//         easing: [0.25, 0.1, 0.25, 1.0],
+//         offset: -50,
+//       });
+
+//       setCurrentIndex((prevIndex) =>
+//         prevIndex < pages.length - 1 ? prevIndex + 1 : 0
+//       );
+//     };
+
+//     const btnDown = document.querySelector(".btn_down");
+//     if (btnDown) {
+//       btnDown.addEventListener("click", handleClick);
+//       return () => btnDown.removeEventListener("click", handleClick);
+//     }
+//   }, [currentIndex]);
+
+//   return locoScrollRef.current;
+// };
+
+// export default useLocomotive;

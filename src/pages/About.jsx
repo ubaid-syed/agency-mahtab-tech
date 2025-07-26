@@ -1,10 +1,9 @@
 import AboutContent from "../modules/AboutContent.jsx";
-import Testimonial from "../modules/Testimonial.jsx";
-import Build from "../modules/Build";
+
 import Encryption from "../modules/Encryption.jsx";
-import Footer from "../modules/Footer";
-import ContactMove from "../components/ContactMove/ContactMove";
-// import MainCard from "../components/CardsAnimation/MainCard.jsx";
+
+
+import MainCard from "../components/CardsAnimation/MainCard.jsx";
 import StarsCanvas from "../components/StarBackground.jsx";
 
 const About = () => {
@@ -51,7 +50,7 @@ const About = () => {
       </div>
       
       <div className="relative z-10 w-full">
-        {/* <MainCard /> */}
+        <MainCard />
         <Encryption />
        
       </div>

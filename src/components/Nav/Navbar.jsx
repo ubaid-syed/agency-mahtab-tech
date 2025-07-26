@@ -1096,58 +1096,68 @@
 //real one
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 const DURATION = 0.25;
 const STAGGER = 0.025;
 
-const FlipLink = ({ children, href }) => {
+// Map menu items to their respective routes
+const navLinks = [
+  { label: "Services", to: "/services" },
+  { label: "About", to: "/about" },
+  { label: "Portfolio", to: "/projects" },
+  { label: "Contact", to: "/contact-us" },
+];
+
+const FlipLink = ({ children, to, onClick, className = "" }) => {
   return (
-    <motion.a
+    <motion.div
       initial="initial"
       whileHover="hovered"
-      href={href}
-      className="relative block overflow-hidden whitespace-nowrap text-lg font-normal"
+      className={`relative block overflow-hidden whitespace-nowrap text-lg font-normal ${className}`}
     >
-      <div>
-        {children.split("").map((l, i) => (
-          <motion.span
-            variants={{
-              initial: { y: 0 },
-              hovered: { y: "-100%" },
-            }}
-            transition={{
-              duration: DURATION,
-              ease: "easeInOut",
-              delay: STAGGER * i,
-            }}
-            className="inline-block"
-            key={i}
-          >
-            {l}
-          </motion.span>
-        ))}
-      </div>
-      <div className="absolute inset-0">
-        {children.split("").map((l, i) => (
-          <motion.span
-            variants={{
-              initial: { y: "100%" },
-              hovered: { y: 0 },
-            }}
-            transition={{
-              duration: DURATION,
-              ease: "easeInOut",
-              delay: STAGGER * i,
-            }}
-            className="inline-block"
-            key={i}
-          >
-            {l}
-          </motion.span>
-        ))}
-      </div>
-    </motion.a>
+      <Link to={to} onClick={onClick} className="block">
+        <div>
+          {children.split("").map((l, i) => (
+            <motion.span
+              variants={{
+                initial: { y: 0 },
+                hovered: { y: "-100%" },
+              }}
+              transition={{
+                duration: DURATION,
+                ease: "easeInOut",
+                delay: STAGGER * i,
+              }}
+              className="inline-block"
+              key={i}
+            >
+              {l}
+            </motion.span>
+          ))}
+        </div>
+        <div className="absolute inset-0 pointer-events-none">
+          {children.split("").map((l, i) => (
+            <motion.span
+              variants={{
+                initial: { y: "100%" },
+                hovered: { y: 0 },
+              }}
+              transition={{
+                duration: DURATION,
+                ease: "easeInOut",
+                delay: STAGGER * i,
+              }}
+              className="inline-block"
+              key={i}
+            >
+              {l}
+            </motion.span>
+          ))}
+        </div>
+      </Link>
+    </motion.div>
   );
 };
 
@@ -1155,6 +1165,7 @@ const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1167,6 +1178,13 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Close mobile menu on navigation
+  const handleNavClick = (to) => {
+    setMenuOpen(false);
+    // Optionally, scroll to top on navigation
+    // window.scrollTo(0, 0);
+  };
+
   return (
     <motion.div
       initial={{ y: 0 }}
@@ -1176,26 +1194,24 @@ const Navbar = () => {
     >
       <div className="w-full max-w-6xl backdrop-blur-md bg-white/75 border border-white/20 rounded-2xl shadow-lg p-3 flex justify-between items-center">
         {/* Logo */}
-        <div className="text-black text-xl font-normal">Mahtab-Tech</div>
+        <Link to="/" className="text-black text-xl font-normal">
+          Mahtab-Tech
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6">
-          {[
-            "Services",
-            "Approach",
-            "Benefits",
-            "Our work",
-            "FAQs",
-            "Contact",
-          ].map((item) => (
-            <FlipLink key={item} href="#">
-              {item}
+          {navLinks.map((item) => (
+            <FlipLink key={item.label} to={item.to}>
+              {item.label}
             </FlipLink>
           ))}
         </nav>
 
         {/* Get Started Button */}
-        <button className="hidden md:block bubbles">
+        <button
+          className="hidden md:block bubbles"
+          onClick={() => navigate("/contact")}
+        >
           <span className="text">Get Started</span>
         </button>
 
@@ -1248,20 +1264,14 @@ const Navbar = () => {
             </div>
 
             {/* Menu Items */}
-            {[
-              "Services",
-              "Approach",
-              "Benefits",
-              "Our work",
-              "FAQs",
-              "Contact",
-            ].map((item, index) => (
+            {navLinks.map((item) => (
               <FlipLink
-                key={item}
-                href="#"
+                key={item.label}
+                to={item.to}
+                onClick={() => handleNavClick(item.to)}
                 className="text-3xl font-normal tracking-wider"
               >
-                {item}
+                {item.label}
               </FlipLink>
             ))}
 
@@ -1270,6 +1280,10 @@ const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.3 }}
+              onClick={() => {
+                handleNavClick("/contact");
+                navigate("/contact");
+              }}
             >
               <span className="relative z-10 block px-5 py-3 overflow-hidden font-normal leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
                 <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
@@ -1288,6 +1302,7 @@ const Navbar = () => {
                 href="https://github.com/Mahtab-Syed"
                 className="text-2xl text-gray-800 hover:text-gray-600"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <i className="ri-github-fill"></i>
               </a>
@@ -1295,6 +1310,7 @@ const Navbar = () => {
                 href="https://www.linkedin.com/in/mahtab-ahmad-8ba27734a/"
                 className="text-2xl text-gray-800 hover:text-gray-600"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <i className="ri-linkedin-box-fill"></i>
               </a>

@@ -184,78 +184,7 @@ const services = [
     icon: ArrowRight,
     color: "from-violet-500 to-purple-500",
   },
-  {
-    id: 9,
-    title: "PSD to WordPress",
-    description:
-      "Providing professional WordPress design and development services for years, you can rely on us to create an effective website for your business.",
-    icon: FileImage,
-    color: "from-pink-500 to-rose-500",
-  },
-  {
-    id: 10,
-    title: "Page Builder",
-    description:
-      "Our WordPress page builder experts create amazing web pages or entire websites using drag and drop builders.",
-    icon: Blocks,
-    color: "from-cyan-500 to-blue-500",
-  },
-  {
-    id: 11,
-    title: "WordPress Speed Optimization",
-    description:
-      "There is no doubt that a slow loading website adversely impacts the overall performance of your business, brand and bottom line.",
-    icon: Zap,
-    color: "from-orange-500 to-red-500",
-  },
-  {
-    id: 12,
-    title: "WordPress Hack & Malware Removal",
-    description:
-      "We offer expert WordPress hack and malware removal services to quickly restore your website’s security and functionality, ensuring your data and reputation are protected.",
-    icon: Shield,
-    color: "from-red-500 to-yellow-500",
-  },
-  {
-    id: 13,
-    title: "Multilingual Website Solutions",
-    description:
-      "Expand your reach with multilingual WordPress solutions, enabling your website to cater to a global audience with seamless language integration.",
-    icon: Languages,
-    color: "from-green-400 to-blue-400",
-  },
-  {
-    id: 14,
-    title: "Custom API Integrations",
-    description:
-      "Integrate third-party services and APIs into your WordPress site for enhanced functionality, automation, and business process optimization.",
-    icon: Settings,
-    color: "from-blue-600 to-indigo-600",
-  },
-  {
-    id: 15,
-    title: "E-commerce Security Audits",
-    description:
-      "Protect your online store with comprehensive security audits, vulnerability assessments, and best-practice recommendations for WooCommerce and WordPress.",
-    icon: Shield,
-    color: "from-red-600 to-orange-400",
-  },
-  {
-    id: 16,
-    title: "WordPress Maintenance & Support",
-    description:
-      "Keep your WordPress site running smoothly with ongoing maintenance, updates, backups, and expert support to resolve issues quickly.",
-    icon: Wrench,
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    id: 17,
-    title: "Custom Plugin Development",
-    description:
-      "Enhance your website’s capabilities with tailor-made WordPress plugins designed to meet your unique business requirements.",
-    icon: Puzzle,
-    color: "from-yellow-500 to-orange-500",
-  },
+  
 ];
 
 // Main component

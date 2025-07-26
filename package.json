@@ -10,14 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@gsap/react": "^2.1.1",
     "@heroicons/react": "^2.2.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
-    "@react-three/postprocessing": "^3.0.4",
+    "@react-three/postprocessing": "^2.5.2",
     "@reduxjs/toolkit": "^2.5.0",
+    "@rollup/rollup-win32-x64-msvc": "^4.45.1",
     "@splinetool/react-spline": "^4.0.0",
     "@splinetool/runtime": "^1.10.16",
+    "@studio-freight/lenis": "^1.0.42",
     "@whatisjery/react-fluid-distortion": "^1.4.0",
     "formik": "^2.4.6",
     "framer-motion": "^11.15.0",
